@@ -12,6 +12,8 @@ To identify Telomere-2-Telomere (T2T) sequences based on:
 - [SeqKit](https://github.com/shenwei356/seqkit)
 - [tidk](https://github.com/tolkit/telomeric-identifier)
 
+__#Note:__ In case provided pre-compiled tools do not work, kindly install these tools and import the path of executables to your working directory
+
 ## Install
 ```
 git clone https://github.com/prasad693/T2T_Sequences.git
