@@ -108,5 +108,7 @@ if [[ $mapping -eq 1 ]]; then
 fi	
 
 echo -e "\n\nMotif based T2T sequences are                 : "$assembly"_motif_"$output".txt\n"	
-echo -e "Alignment and motif based T2T sequences       : "$assembly"_alignment_"$output".txt\n"
-	
+
+if [[ $mapping -eq 1 ]]; then
+	echo -e "Alignment and motif based T2T sequences       : "$assembly"_alignment_"$output".txt\n"
+fi	
