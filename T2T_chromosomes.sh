@@ -98,17 +98,23 @@ echo -e "tidk search -d . -f $output.teloinput.fa -o $output -s $tmotif -w 1000\
 
 tidk search -d . -f $output.teloinput.fa -o $output -s $tmotif -w 1000
 
-tail -n +2 $output"_telomeric_repeat_windows.csv" | awk -F "," '$3 + $4 >=15{print $1}' | while read line; do contig=`echo $line | sed 's/_.*//'`; egrep --color ${contig} $output".seqinfo.txt" | tr -s "[:blank:]" "\t" ; done | cut -f1,2 | sort | uniq -c | sort -rgk1 | tr -s "[:blank:]" "\t" | sed 's/^\t//' | grep "^2" | cut -f2- >$assembly"_motif_"$output".txt"
+tail -n +2 $output"_telomeric_repeat_windows.csv" | awk -F "," '$3 + $4 >=15{print $1}' | while read line; do contig=`echo $line | sed 's/_.*//'`; egrep --color ${contig} $output".seqinfo.txt" | tr -s "[:blank:]" "\t" ; done | cut -f1,2 | sort | uniq -c | sort -rgk1 | tr -s "[:blank:]" "\t" | sed 's/^\t//' | grep "^2" | cut -f2- >$output"_motif_T2T.txt"
 
 if [[ $mapping -eq 1 ]]; then
-	echo -e "\n\nReference sequence provided, proceeding with mapping bases T2T filtering\n"
-	minigraph -x asm --show-unmap=yes -t $threads -K1.9g $reference $assembly >$output".paf"
-	cov_cal -T $output".paf" 2>$output"_alignment_T2T.txt"
-	tail -n +2 $output"_telomeric_repeat_windows.csv" | awk -F "," '$3 + $4 >= 15{print $1}' | while read line; do contig=$(echo "$line" | sed 's/_.*//'); grep $contig $output".seqinfo.txt" | tr -d '\n'; echo -ne '\t'; grep  $contig $output"_alignment_T2T.txt" | tr -d '\n'; echo -ne '\n' ; done | cut -f 1-3,9,10 | awk 'NF>4{print}' | sort | uniq -c | tr -s "[:blank:]" "\t" | sed 's/^\t//' | grep "^2" | cut -f2- >$assembly"_alignment_"$output".txt"
-fi	
+	if [[ -e $output".paf" ]]; then
+		echo -e "\n\nExisting paf file found. Skipping alingment step\n"
+		cov_cal -T $output".paf" 2>$output"_alignment.txt"
+		tail -n +2 $output"_telomeric_repeat_windows.csv" | awk -F "," '$3 + $4 >= 15{print $1}' | while read line; do contig=$(echo "$line" | sed 's/_.*//'); grep $contig $output".seqinfo.txt" | tr -d '\n'; echo -ne '\t'; grep  $contig $output"_alignment.txt" | tr -d '\n'; echo -ne '\n' ; done | cut -f 1-3,9,10 | awk 'NF>4{print}' | sort | uniq -c | tr -s "[:blank:]" "\t" | sed 's/^\t//' | grep "^2" | cut -f2- >$output"_alignment_T2T.txt"
+	else
+		echo -e "\n\nReference sequence provided, proceeding with mapping based T2T filtering\n"
+		minigraph -x asm --show-unmap=yes -t $threads -K1.9g $reference $assembly >$output".paf"
+		cov_cal -T $output".paf" 2>$output"_alignment.txt"
+		tail -n +2 $output"_telomeric_repeat_windows.csv" | awk -F "," '$3 + $4 >= 15{print $1}' | while read line; do contig=$(echo "$line" | sed 's/_.*//'); grep $contig $output".seqinfo.txt" | tr -d '\n'; echo -ne '\t'; grep  $contig $output"_alignment.txt" | tr -d '\n'; echo -ne '\n' ; done | cut -f 1-3,9,10 | awk 'NF>4{print}' | sort | uniq -c | tr -s "[:blank:]" "\t" | sed 's/^\t//' | grep "^2" | cut -f2- >$output"_alignment_T2T.txt"
+	fi	
+fi
 
-echo -e "\n\nMotif based T2T sequences are                 : "$assembly"_motif_"$output".txt\n"	
+echo -e "\n\nMotif based T2T sequences are                 : "$output"_motif_T2T.txt\n"	
 
 if [[ $mapping -eq 1 ]]; then
-	echo -e "Alignment and motif based T2T sequences       : "$assembly"_alignment_"$output".txt\n"
+	echo -e "Alignment and motif based T2T sequences       : "$output"_alignment_T2T.txt\n"
 fi	
