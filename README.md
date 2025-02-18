@@ -11,6 +11,7 @@ To identify Telomere-2-Telomere (T2T) sequences based on:
 - [Minigraph](https://github.com/lh3/minigraph)
 - [SeqKit](https://github.com/shenwei356/seqkit)
 - [tidk](https://github.com/tolkit/telomeric-identifier)
+- [cov_cal](https://github.com/chhylp123/assembly-coverage)
 
 __#Note:__ In case provided pre-compiled tools do not work, kindly install these tools and import the path of executables to your working directory
 
